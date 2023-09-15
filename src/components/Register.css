@@ -1,0 +1,21 @@
+.container:hover{
+    background-color: rgb(13, 98, 235);
+}
+.form-data{
+    margin-top: 5px;
+}
+#fullname:hover{
+    border-color: rgb(237, 105, 10);
+
+}
+#signup{
+    background-color: rgb(59, 3, 243);
+    width: 100px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: medium;
+    border-radius: 5px;
+    color: whitesmoke;
+}
+#signup:hover{
+    border-radius: 50%;
+}
