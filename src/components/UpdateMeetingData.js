@@ -1,94 +1,87 @@
 import axios from "axios";
 import { useState } from "react";
+import { Button,Form,Modal,ModalBody
+,ModalFooter,ModalHeader,FormGroup,Label,Input } from "reactstrap";
+import ForJoine from './ForJoine';
 
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  FormGroup,
-  Label,
-  Input,
-} from "reactstrap";
-import ForJoin from "./ForJoin";
-const UpdateMeetingData = (props) => {
+
+
+const UpdateMeetingData=(props)=>{
   // let {updatecard}=props;
 
-  console.log("props meeting id fro update", props.meetingId);
+  console.log("props meeting id fro update",props.meetingId)
 
-  let [UpdateMeeting, setUpdateMeeting] = useState(false);
-  let localToken = localStorage.getItem("token");
-
+  let [UpdateMeeting,setUpdateMeeting]=useState(false);
+  let localToken=localStorage.getItem('token');
+  
   // let Ids=ReceiverIdS.split(',')
   // let ReceiverIds=[];
   // ReceiverIds.push(Ids);
+  
 
-  let [DataMeeting, setDataMeeting] = useState({
-    meetingName: "",
-    description: "",
-    startDateTime: "",
-    endDateTime: "",
-    // receiverIds
-    // _id
-  });
+  let [DataMeeting, setDataMeeting]=useState({
+      meetingName:"",
+      description:"",
+      startDateTime:"",
+      endDateTime:""
+      // receiverIds
+      // _id
+  })
 
-  let handleChange = (e) => {
-    let { name, value } = e.target;
-    setDataMeeting({ ...DataMeeting, [name]: value });
-  };
-
-  function toggleUpdateMeetingData() {
-    setUpdateMeeting(!UpdateMeeting);
+  let handleChange=(e)=>{
+      let {name,value}=e.target;
+      setDataMeeting({...DataMeeting,[name]:value});
   }
 
-  let SubmitMeeting = async () => {
-    let UpdatedMeetingData = {
-      meetingName: DataMeeting.meetingName,
-      description: DataMeeting.description,
-      startDateTime: DataMeeting.startDateTime,
-      endDateTime: DataMeeting.endDateTime,
-      receiverIds: localStorage.getItem("ReceiverIds").split(","),
-      _id: props.meetingId,
-    };
-    let header = {
-      Authorization: localToken,
-    };
+  function toggleUpdateMeetingData(){
+      setUpdateMeeting(!UpdateMeeting);
+  }
 
-    try {
-      let sendMeetingData = await axios.post(
-        "http://localhost:5000/api/updateMeeting",
-        UpdatedMeetingData,
-        {
-          headers: header,
-        }
-      );
-      console.log("Updated adata ", UpdatedMeetingData);
-      props.showMeetingData();
-      toggleUpdateMeetingData();
-    } catch (e) {
-      console.log("Error :Updated Meeting data Is not send..");
-    }
-  };
 
-  return (
-    <>
-      <Button
-        style={{ marginLeft: 126, marginRight: -60 }}
-        color="info"
-        onClick={toggleUpdateMeetingData}
-      >
-        UpdateMeeting
-      </Button>
+  
 
-      <Modal isOpen={UpdateMeeting} toggle={toggleUpdateMeetingData}>
-        <ModalHeader toggle={toggleUpdateMeetingData}>
-          Update Meeting data
-        </ModalHeader>
-        <ModalBody>
-          <Form>
-            <FormGroup>
+  let SubmitMeeting= async()=>{
+      
+       let  UpdatedMeetingData={
+          meetingName:DataMeeting.meetingName,
+          description:DataMeeting.description,
+          startDateTime:DataMeeting.startDateTime,
+          endDateTime:DataMeeting.endDateTime,
+           receiverIds: localStorage.getItem('ReceiverIds').split(','),
+          _id:props.meetingId
+      }
+      let header={
+          Authorization:localToken
+         }
+        
+
+      try{
+          let sendMeetingData=await axios.post('http://localhost:5000/api/UpdateMeeting',UpdatedMeetingData,
+          {
+              headers:header 
+          })
+          console.log("Updated adata ",UpdatedMeetingData)
+          props.showMeetingData()
+          toggleUpdateMeetingData();
+          
+      }catch(e){
+          console.log("Error :Updated Meeting data Is not send..")
+      }
+     
+     
+  }
+
+
+return (
+  <>
+  <Button style={{marginLeft:126,marginRight:-60}} color="info"  
+  onClick={toggleUpdateMeetingData}>UpdateMeeting</Button>
+
+<Modal isOpen={UpdateMeeting} toggle={toggleUpdateMeetingData}>
+          <ModalHeader toggle={toggleUpdateMeetingData}>Update Meeting data</ModalHeader>
+          <ModalBody>
+           <Form>
+           <FormGroup>
               <Label for="examplePassword">MeetingName</Label>
               <Input
                 id="meetingName"
@@ -111,7 +104,7 @@ const UpdateMeetingData = (props) => {
               />
             </FormGroup>
             <FormGroup>
-              <ForJoin user={props.user}></ForJoin>
+             <ForJoine user={props.user}></ForJoine>
             </FormGroup>
             <FormGroup>
               <Label for="examplePassword">StartDateTime</Label>
@@ -135,19 +128,21 @@ const UpdateMeetingData = (props) => {
                 value={DataMeeting.endDateTime}
               />
             </FormGroup>
-          </Form>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={SubmitMeeting}>
-            Submit
-          </Button>
-          <Button color="secondary" onClick={toggleUpdateMeetingData}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </>
-  );
-};
+           </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" 
+            onClick={SubmitMeeting}
+            >
+              Submit
+            </Button>
+            <Button color="secondary" onClick={toggleUpdateMeetingData} >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+  </>
+)
+}
 
-export default UpdateMeetingData;
+export default UpdateMeetingData

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const MeetingList = () => {
+const MeetingList =()=>{
   return (
     <div>
       

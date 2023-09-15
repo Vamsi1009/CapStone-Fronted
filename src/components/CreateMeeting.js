@@ -1,147 +1,289 @@
+
 import axios from "axios";
-import { useState } from "react";
+import DatePicker from "react-datepicker";
 
-import {
-  Button,
-  Form,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  FormGroup,
-  Label,
-  Input,
-} from "reactstrap";
-import ForJoin from './ForJoin'
-const UpdateMeetingData = (props) => {
-  console.log("props meeting id fro update", props.meetingId);
+import React,{ useState,useEffect } from "react";
+import { Button,Card,Form,FormGroup,
+  Modal,ModalHeader,ModalBody,ModalFooter
+  ,CardHeader, Input,CardBody,Label,DropdownItem,DropdownMenu
+  ,DropdownToggle,ButtonDropdown,CardTitle
+ 
+  } from "reactstrap";
+  import 'react-datepicker/dist/react-datepicker.css';
+// const CreateMeeting = (props) => {
+  const CreateMeeting = (props)=>{
 
-  let [UpdateMeeting, setUpdateMeeting] = useState(false);
-  let localToken = localStorage.getItem("token");
-
+  let [isCreateMeetingOpen,setisCreateMeetingOpen]=useState(false);
+ 
+  let [User,setUser]=useState([]);
+ 
+  let [dropdownOpen, setOpen] = useState(false);
+ 
+  let [selectedUsers, setSelectedUsers] = useState([]);
+ 
+  let [isChecked, setIsChecked] = useState(false);
+ 
+  let [startDate, setStartDate] = useState(new Date());
+ //  let  [startTime, setStartTime] = useState('10:00');
+ 
+  let [endDate, setEndDate] = useState(new Date());
+ 
+ 
+  let localId=localStorage.getItem('userId');
+  let localToken=localStorage.getItem('token');
+ 
+ const handleCheckboxChange = (event) => {
+   setIsChecked(event.target.checked);
+   console.log("Chacked ",isChecked)
+ };
+ 
+ let  handleStartDateChange = (data)=>{
+      setStartDate(data.getTime());
+ }
+ // let  handleStartTimeChange  =(time) =>{
+ //   setStartTime(time)
+ // }
+ 
+ let handleEndDateChange = (data)=>{
+     setEndDate(data.getTime())
+ }
+ 
+ console.log("start time , end time input",startDate, "for end time ",endDate)
   
-
-  let [DataMeeting, setDataMeeting] = useState({
-    meetingName: "",
-    description: "",
-    startDateTime: "",
-    endDateTime: "",
+ 
+  let [Meeting,setMeeting]=useState({
+     meetingName:"",
+     description:"",
+     RequesterId:localId,
+     ReceiverIds:[],
   });
-
-  let handleChange = (e) => {
-    let { name, value } = e.target;
-    setDataMeeting({ ...DataMeeting, [name]: value });
-  };
-
-  function toggleUpdateMeetingData() {
-    setUpdateMeeting(!UpdateMeeting);
-  }
-
-  let SubmitMeeting = async () => {
-    let UpdatedMeetingData = {
-      meetingName: DataMeeting.meetingName,
-      description: DataMeeting.description,
-      startDateTime: DataMeeting.startDateTime,
-      endDateTime: DataMeeting.endDateTime,
-      receiverIds: localStorage.getItem("ReceiverIds").split(","),
-      _id: props.meetingId,
-    };
-    let header = {
-      Authorization: localToken,
-    };
-
-    try {
-      let sendMeetingData = await axios.post(
-        "http://localhost:5000/api/updateMeeting",
-        UpdatedMeetingData,
-        {
-          headers: header,
-        }
-      );
-      console.log("Updated adata ", UpdatedMeetingData);
-      props.showMeetingData();
-      toggleUpdateMeetingData();
-    } catch (e) {
-      console.log("Error :Updated Meeting data Is not send..");
+ 
+ let handleUserSelection = (selectedUser) =>{
+ 
+     if(selectedUsers.includes(selectedUser)){
+         setSelectedUsers(selectedUsers.filter((user) => user !== selectedUser))
+     }else{
+         setSelectedUsers([...selectedUsers, selectedUser]);
+     }
+ };
+ console.log("selected user data",selectedUsers)
+ 
+  useEffect(()=>{
+     let getUser= async ()=>{
+         try{
+             let userData=await axios.get("http://localhost:5000/api/getAllUsers")
+               console.log("User data ",userData)
+               setUser(userData.data)
+               
+         }catch(e){
+             console.log("error...", e)
+         }
+     }
+     getUser();
+  },[])
+ 
+  /////////////////////////////////////////////////////////////////////////////////////////
+ 
+  let showUserData= () =>{
+         
+     if(!User){
+         <h3>No Meeting Dta found</h3>
+     }else{
+         return User.map((user)=>{
+                 return(
+                     <Card
+                     className="my-2"
+                     color="light"
+                     style={{
+                       width: '18rem'
+                     }}
+                   >
+                     <CardHeader>
+                      { user.fname}
+                     </CardHeader>
+                     <CardBody>
+                       <CardTitle tag="h5">
+                         {user.phonNumber}
+                       </CardTitle>
+                       {/* <CardText>
+                        {user.Location}
+                        
+                       </CardText> */}
+                       
+                     
+ 
+                     </CardBody>
+                    
+                   </Card>
+                 )
+             })
+     }
+ }
+  
+ ////////////////////////////////////////////////////////////////////////////////////////
+ 
+ 
+ let toggleCreateMeetingModal= ()=>{
+     setisCreateMeetingOpen(!isCreateMeetingOpen);
+ }
+ 
+ let handleChange=(e)=>{
+    
+     let {name,value}=e.target;
+     setMeeting({...Meeting,[name]:value})
+ }
+ 
+ console.log("Meeting ",Meeting)
+ // console.log("user meeting data",User)
+ 
+ let SubmitMeeting= async ()=>{
+      
+     // let selectedUserIds = selectedUsers.map((userId) => userId);
+ 
+   setMeeting({ ...Meeting,ReceiverIds: selectedUsers})
+ 
+ //    let receiverIds=Meeting.ReceiverIds.split(',')
+ // console.log("user meeting data2",Meeting.ReceiverIds)
+ 
+    let createdata={
+     meetingName:Meeting.meetingName,
+     description:Meeting.description,
+     requesterId:Meeting.RequesterId,
+     receiverIds:selectedUsers,
+     startDateTime:startDate,
+     endDateTime:endDate
+ 
     }
-  };
-
-  return (
-    <>
-      <Button
-        style={{ marginLeft: 126, marginRight: -60 }}
-        color="info"
-        onClick={toggleUpdateMeetingData}
-      >
-        UpdateMeeting
-      </Button>
-
-      <Modal isOpen={UpdateMeeting} toggle={toggleUpdateMeetingData}>
-        <ModalHeader toggle={toggleUpdateMeetingData}>
-          Update Meeting data
-        </ModalHeader>
-        <ModalBody>
-          <Form>
-            <FormGroup>
-              <Label for="examplePassword">MeetingName</Label>
-              <Input
-                id="meetingName"
-                name="meetingName"
-                placeholder="Enter Name"
-                type="text"
-                onChange={handleChange}
-                value={DataMeeting.meetingName}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="examplePassword">Description</Label>
-              <Input
-                id="description"
-                name="description"
-                placeholder="Entar Content"
-                type="text"
-                onChange={handleChange}
-                value={DataMeeting.description}
-              />
-            </FormGroup>
-            <FormGroup>
-              <ForJoin user={props.user}></ForJoin>
-            </FormGroup>
-            <FormGroup>
-              <Label for="examplePassword">StartDateTime</Label>
-              <Input
-                id="startDateTime"
-                name="startDateTime"
-                placeholder="Entar startDateTime"
-                type="text"
-                onChange={handleChange}
-                value={DataMeeting.startDateTime}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="examplePassword">EndDateTime</Label>
-              <Input
-                id="endDateTime"
-                name="endDateTime"
-                placeholder="Entar endDateTime"
-                type="text"
-                onChange={handleChange}
-                value={DataMeeting.endDateTime}
-              />
-            </FormGroup>
-          </Form>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={SubmitMeeting}>
-            Submit
-          </Button>
-          <Button color="secondary" onClick={toggleUpdateMeetingData}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </>
-  );
-};
-
-export default UpdateMeetingData;
+    let header={
+     Authorization:localToken
+    }
+    console.log("for craete data  Asif",createdata);
+ 
+    try{
+     let MeetingData= await axios.post("http://localhost:5000/api/createMeeting",createdata,
+     {
+       headers:header
+     });
+     props.showMeetingData()
+     return MeetingData.data;
+    
+ 
+    }catch(e){
+     console.log("Error :Meeting data Is not send..")
+    }
+    toggleCreateMeetingModal();
+    
+ }
+ 
+ 
+ 
+   return (
+     <>
+      <Button name='accepted' style={{marginLeft:50}} color="info"  
+       onClick={toggleCreateMeetingModal} >Create New Meeting</Button>
+ 
+ <Modal isOpen={isCreateMeetingOpen} toggle={toggleCreateMeetingModal}>
+             <ModalHeader toggle={toggleCreateMeetingModal}>Enter Meeting Info</ModalHeader>
+             <ModalBody>
+              <Form>
+              <FormGroup>
+                 <Label for="examplePassword">Meeting Name</Label>
+                 <Input
+                   id="TimeetingNametle"
+                   name="meetingName"
+                   placeholder="Enter Meeting"
+                   type="text"
+                   onChange={handleChange}
+                
+                 />
+               </FormGroup>
+               <FormGroup>
+                 <Label for="examplePassword">Meeting Description</Label>
+                 <Input
+                   id="description"
+                   name="description"
+                   placeholder="Entar Description"
+                   type="text"
+                   onChange={handleChange}
+               
+                 />
+               </FormGroup>
+ 
+               <FormGroup>
+ 
+                 <div>
+                 <Label color='bg-info' >Meeting Start Date:</Label>
+                 <DatePicker              
+                 selected={Meeting.startDate}
+                 onChange={handleStartDateChange}               
+                 dateFormat="yyyy/MM/dd h:mm aa"
+                 />   
+                 {/* <label>Start Time:</label> 
+                 <TimePicker value={startTime}
+                 showTimeSelect
+                   timeFormat='HH:mm'
+                    onChange={handleStartTimeChange}
+                    timeCaption='Time' 
+                    timeIntervals={15}
+                      />        */}
+                 </div>
+                   
+               </FormGroup>
+ 
+               <FormGroup>
+               <Label>Meeting End Date:</Label>
+                 <DatePicker
+                 
+                 selected={Meeting.endDate}
+                 onChange={handleEndDateChange}
+                 // showTimeSelect
+                 // timeFormat='HH:mm'
+                 // timeIntervals={15}
+                 dateFormat="yyyy/MM/dd h:mm aa"
+                 // timeCaption='Time'
+                 />              
+               </FormGroup>
+               <ButtonDropdown
+                toggle={() => { setOpen(!dropdownOpen) }}
+                 isOpen={dropdownOpen}>
+                 <DropdownToggle className="bg-info" color='bg-dark' caret>
+                     Invite your Frinds for Meeting
+                 </DropdownToggle>
+                 <DropdownMenu>
+                 <DropdownItem header>Select users</DropdownItem>
+                    {User.map((user)=>(
+                     <DropdownItem key={user.id} onClick={() => handleUserSelection(user._id)}>
+                     <Input type="checkbox" checked={selectedUsers.includes(user._id)}
+                     onChange={handleCheckboxChange} />
+                     {user.fname}
+                   </DropdownItem>
+                    ))}
+                     
+                 </DropdownMenu>
+             </ButtonDropdown>
+              </Form>
+             </ModalBody>
+             <ModalFooter>
+               <Button  className="bg-info" color="bg-info" 
+               onClick={SubmitMeeting}
+               >
+                 Submit
+               </Button>
+               <Button color="secondary" onClick={toggleCreateMeetingModal}>
+                 Cancel
+               </Button>
+             </ModalFooter>
+           </Modal>
+          <br></br>
+          <br></br>
+          
+          <h4  style={{paddingLeft:90,paddingBottom:10}}>All Users</h4>
+         <div>
+             {showUserData()}
+         </div>
+ 
+     </>
+   )
+ }
+ 
+export default CreateMeeting

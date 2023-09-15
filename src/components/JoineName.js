@@ -4,7 +4,7 @@
 import React,{ useState } from "react";
 import { DropdownItem,DropdownToggle,ButtonDropdown ,DropdownMenu} from "reactstrap";
 
-const JoineName = (props) => {
+const JoineName =(props)=>{
 
     console.log("props user ",props.user,props.userId)
    

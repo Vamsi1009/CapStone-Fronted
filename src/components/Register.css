@@ -1,5 +1,6 @@
-.container:hover{
+.container1:hover{
     background-color: rgb(13, 98, 235);
+    cursor:pointer
 }
 .form-data{
     margin-top: 5px;
@@ -7,6 +8,21 @@
 #fullname:hover{
     border-color: rgb(237, 105, 10);
 
+}
+.container1{
+    text-align: center;
+    justify-content: center;
+    margin: auto;
+    width: 300px;
+    height: 200px;
+    border-radius: 10px;
+    
+    background-color:ButtonHighlight;
+    font: 200;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-top:150px;
+    border-color: rgb(8, 244, 43);
+    color: rgb(19, 3, 3);
 }
 #signup{
     background-color: rgb(59, 3, 243);
@@ -18,4 +34,7 @@
 }
 #signup:hover{
     border-radius: 50%;
+}
+button{
+    cursor: pointer;
 }

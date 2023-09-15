@@ -1,4 +1,4 @@
-.container1{
+.container2{
     text-align: center;
     justify-content: center;
     margin: auto;
@@ -21,7 +21,14 @@ Input:hover{
     border-color: brown;
 
 }
-Button{
+button{
     border-color: rgb(65, 115, 231);
     border-radius: 5px;
+    
+}
+.btn{
+    width: 100px;
+}
+.btn:hover{
+    background-color: cornflowerblue;
 }

@@ -1,61 +1,128 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useLocation,useNavigate } from 'react-router-dom';
 
-import { Button } from 'reactstrap';
-import Headers from './Headers'
+import React,{ useState } from "react";
+import { Navbar,NavbarBrand,Nav,Button,NavItem,Modal
+,ModalBody,ModalFooter,ModalHeader } from "reactstrap";
 
-const GetLocation = () => {
-  let navigate = useNavigate();
 
-  let Number=useLocation();
-  let localnumber=localStorage.getItem('phonnumber')
-  console.log("from localstorage ",localnumber)
-  console.log("test otp for location ",Number.state)
+
+const Headers = (props)=>{
+  // let navigate = useNavigate();
+  let userId = localStorage.getItem("userId");
+  let number = localStorage.getItem("phonnumber");
+  let name = localStorage.getItem("usefName");
+  let data = [userId, number, name];
+  console.log(data);
+
+  let [isModalOpen, setIsModalOpen] = useState(false);
   
-  let [locationfile,setlocationfile]=useState({
-    phonNumber:localnumber,
-    lat:'',
-    long:''
-   
-  })
 
-  useEffect(()=>{
-    navigator.geolocation.getCurrentPosition((position)=>{
-      let Lat = position.coords.latitude;
-      let Long= position.coords.longitude;
-      
-       setlocationfile({...locationfile,lat:Lat,long:Long});
-     
-       console.log("useState ===> +",locationfile);
-       
-   })
-  },[])
-  
-  let locationFinder = async ()=>{
-    console.log( "useState ",locationfile);
-     try{
-        let findLocation=await axios.post(
-          "http://localhost:5000/api/getLocation",
-          locationfile
-        );
-        if(findLocation.status === 200){
-          console.log("Location getit ",findLocation)
-          navigate('/home');
-        }
-     }catch(e){
-      console.log("Error from Api", e);
-     }
-  }
+  let toggleModal = () => setIsModalOpen(!isModalOpen);
+  const [isHovered, setIsHovered] =useState(false);
+
+  const buttonHoverStyle = {
+    color: 'red',
+    backgroundColor: "white",
+    filter: 'brightness(130%)'
+  };
+
+  const buttonStyle = {
+    color: 'white',
+  marginLeft: '1100px',
+  textDecoration: 'none',
+  fontSize: '20px'
+  };
+ 
+
+  let logout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+    
+  };
+
+  const handleMouseOver = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseOut = () => {
+    setIsHovered(false);
+  };
+ 
+
   return (
-   <>
-   <div>
-  <Button color="primary" className="btn center btn-dark w-50" onClick={locationFinder}>
-    Click Me For  Your Location
-  </Button>
-</div>
-   </>
-  )
-}
+    <>
+      {userId ? (
+        <Navbar className="my-0" dark sticky="top">
+          <NavbarBrand href="/">BestLocations</NavbarBrand>
+          
+          <Nav className="ml-auto" navbar>
+          <NavItem>
+            <Button color="link" onClick={toggleModal} 
+             style={{ ...buttonStyle, ...(isHovered ? buttonHoverStyle : {}),color:"white",
+             marginLeft:1100,textDecoration:"none",fontSize:20 }}
+             onMouseOver={handleMouseOver}
+             onMouseOut={handleMouseOut}
+             >
+              User
+            </Button>
+          </NavItem>
+        </Nav>
+        <Nav className="ml-auto" navbar>
+          <NavItem>
+            <Button color="link" onClick={logout} style={{color:"white", textDecoration:"none", fontSize:20,marginRight:50}}>
+              Logout
+            </Button>
+          </NavItem>
+        </Nav>
+        
 
-export default GetLocation
+          <Modal isOpen={isModalOpen} toggle={toggleModal}>
+        <ModalHeader toggle={toggleModal}>User Data</ModalHeader>
+        <ModalBody>
+          <p>Name:      {data[2]} </p>
+          <p>Id:   {  data[0]} </p>
+          <p>Phone:    {data[1]} </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={toggleModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+
+          {/* <div>
+            <Nav tabs>
+              <Dropdown nav isOpen={dropdownOpen} toggle={toggle}>
+                <DropdownToggle
+                  nav
+                  caret
+                  style={{ color: "white", marginRight: 20 }}
+                >
+                  Dropdown
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem style={{ color: "black" }} onClick={getUser}>
+                    User
+                  </DropdownItem>
+                  <DropdownItem style={{ color: "black" }} onClick={logout}>
+                    Logout
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </Nav> */}
+          {/* </div> */}
+          {/* <Input  className="search"style={{ width: "40%" }}
+     placeholder="Search Posts"
+    //  onChange={data=(e)=>e.target.value}
+  /> */}
+        </Navbar>
+      ) : (
+        <Navbar className="my-0" dark>
+          <NavbarBrand>BestLocation</NavbarBrand>
+        </Navbar>
+      )}
+    </>
+  );
+};
+
+export default Headers

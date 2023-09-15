@@ -1,25 +1,18 @@
-// import axios from 'axios';
-// import React, { useContext, useState } from 'react'
-// import { NavLink, useLocation, useNavigate } from "react-router-dom";
-// import { ToastContainer, toast } from "react-toastify";
+
 import axios from "axios";
-import React,{ useContext,useState } from "react";
+import React,{ useState,useEffect ,useContext} from "react";
+import { useLocation,useNavigate, } from "react-router-dom";
 import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useLocation,useNavigate,NavLink } from "react-router-dom";
-import { Input,Button } from "reactstrap";
-
 import { AuthContext } from '../auth';
-import './Otp.css'; 
+import './Otp.css';
 
-
-const Otp = () => {
+const Otp =()=>{
   let Number=useLocation();
   console.log("test otp",Number.state)
 
   let userInfo = useContext(AuthContext);
   let localID= localStorage.getItem('userId');
-  console.log(localID);
   
   let navigate = useNavigate();
 
@@ -38,7 +31,7 @@ const Otp = () => {
     toast.error("Enter your 4 digit OTP !");
    }else if( !/[^a-zA-Z]/.test(otp)){
     toast.error("Enter your 4 (DIGIT) OTP !");
-   }else if(otp.length !==4){
+   }else if(otp.length !=4){
     toast.error("Enter your (4) digit OTP !");
    }else{
     let userdata={
@@ -48,7 +41,7 @@ const Otp = () => {
     // /api/otpverification
     try{
       let verifyOTP= await axios.post(
-        "http://localhost:5000/api/OtpVerify",
+        "http://localhost:5000/api/otpverification",
         userdata);
         if(verifyOTP.status === 200){
           console.log("from front end otp verify",verifyOTP.data.message._id);
@@ -78,30 +71,17 @@ const Otp = () => {
 
   return (
     <>
-    
-  
-    <div className="container1 mt-5">
-    <ToastContainer 
-       position="top-right"
-       autoClose={5000}
-       hideProgressBar={false}
-       newestOnTop={true}
-       closeOnClick
-       rtl={true}
-       pauseOnFocusLoss
-       draggable
-       pauseOnHover
-       theme="light"/>
+    <div className="container2 mt-5">
         <div className="row d-flex justify-content-center">
-          <div className="col-md-6">
-            <h2 style={{ textAlign: "center",color:"red" }}>Type OTP</h2>
+          <div className="col-md-6
+          ">
+            <h2 style={{ textAlign: "center",marginTop:"10px" }}>Type OTP</h2>
             <div className="card px-5 py-5" id="form1">
               <div className="form-data">
                 <div className="forms-inputs mb-4">
                   {" "}
-                  <span>OTP</span> <br/>
-                  
-                  <Input
+                  <span>OTP:  </span>
+                  <input
                     autoComplete="off"
                     onChange={handleChange}
                     name="otp"
@@ -114,25 +94,19 @@ const Otp = () => {
                     </div> */}
                 <div className="mb-3">
                   {" "}
-                  <Button  style={{
-                    width:"100px",
-                    backgroundColor:"blue",
-                    color:"whitesmoke",
-                    fontSize:"medium",
-                    fontFamily:"sans-serif"
-                  }} id =" Otp1" className="btn btn-dark w-100" onClick={otpChecking}>
+                  <button className="btn btn-dark w-100" onClick={otpChecking}>
                   OTP verification
-                  </Button>{" "}
+                  </button>{" "}
                 </div>
                
               </div>
             </div>
           </div>
         </div>
-      </div> 
-       
+      </div>
+       <ToastContainer />
     </>
   );
 }
 
-export default Otp
+export default Otp;

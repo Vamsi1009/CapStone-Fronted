@@ -1,18 +1,19 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useLocation,useNavigate } from 'react-router-dom';
+import axios from "axios";
+import React,{ useState,useEffect } from "react";
+import { useLocation,useNavigate } from "react-router-dom";
 
-import { Button } from 'reactstrap';
-import Headers from './Headers'
+import { Button } from "reactstrap";
+import Headers from "./Headers";
 
-const GetLocation = () => {
+
+const GetLocation =()=>{
   let navigate = useNavigate();
 
   let Number=useLocation();
   let localnumber=localStorage.getItem('phonnumber')
   console.log("from localstorage ",localnumber)
   console.log("test otp for location ",Number.state)
-  
+  //  let [locationfile,setlocationfile]=useState({})
   let [locationfile,setlocationfile]=useState({
     phonNumber:localnumber,
     lat:'',
@@ -24,7 +25,11 @@ const GetLocation = () => {
     navigator.geolocation.getCurrentPosition((position)=>{
       let Lat = position.coords.latitude;
       let Long= position.coords.longitude;
+      // let data={Lat,Long}
        setlocationfile({...locationfile,lat:Lat,long:Long});
+      //  setlocationfile({...locationfile,long:Long});
+      //  console.log(Lat,Long);
+      //  setlocationfile(data)
        console.log("useState ===> +",locationfile);
        
    })
